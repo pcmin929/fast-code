@@ -31,6 +31,7 @@ pipeline {
                 sh "docker build -t ${DOCKERHUB}:latest ."
                 // currentBuild.number 젠킨스가 제공하는 빌드넘버 변수
                 // oolralra/fast:<빌드넘버> 와 같은 이미지가 만들어질 예정.
+                
             }
             post {
                 failure {
@@ -41,9 +42,12 @@ pipeline {
                 }
             }
         }
-        stage('start3') {
+        stage('docker image push') {
             steps {
-                sh "echo hello jenkins!!!"
+                withDockerRegistry(credentialsId: DOCKERHUBCREDENTIAL, url: '') {
+                    sh "docker push ${DOCKERHUB}:${currentBuild.number}"
+                    sh "docker push ${DOCKERHUB}:latest"
+
             }
             post {
                 failure {
