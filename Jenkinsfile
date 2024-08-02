@@ -59,7 +59,7 @@ pipeline {
                 success {
                     sh "docker image rm -f ${DOCKERHUB}:${currentBuild.number}"
                     sh "docker image rm -f ${DOCKERHUB}:latest"
-                    sh "echo push failed"
+                    sh "echo push success"
                     // 성공하든 실패하든 로컬에 있는 도커이미지는 삭제
                 }
             }
