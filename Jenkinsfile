@@ -3,8 +3,12 @@ pipeline {
     environment {
         GIT_NAME = 'pcmin929'
         GIT_EMAIL = 'pcmin929@gmail.com'
-        CODE_REPO = 'git@github.com:pcmin929/fast-code.git'
-        MANIFEST_REPO = 'git@github.com:pcmin929/deployment.git'
+        // CODE_REPO = 'git@github.com:pcmin929/fast-code.git'
+        // MANIFEST_REPO = 'git@github.com:pcmin929/deployment.git'
+
+        CODE_REPO = 'git-codecommit.ap-northeast-2.amazonaws.com/v1/repos/code'
+        MANIFEST_REPO = 'git-codecommit.ap-northeast-2.amazonaws.com/v1/repos/mani'
+
         CONTAINER_REPO = '865577889736.dkr.ecr.ap-northeast-2.amazonaws.com/fast'
         CONTAINER_REGISTRY_CREDENTIAL = 'ecr_cre'
     }
@@ -21,12 +25,16 @@ pipeline {
                   checkout scm
             }
             post {
+                always {
+                    sh "echo always"
+                }
                 failure {
                     sh "echo clone failed"
                 }
                 success {
                     sh "echo clone success"
                 }
+                
             }
         }
         stage('docker image build') {
