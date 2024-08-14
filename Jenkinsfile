@@ -50,7 +50,7 @@ pipeline {
         }
         stage('docker image push') {
             steps {
-                withDockerRegistry(credentialsId: 'ecr:ap-northeast-2:ecr_cre', url: '${DOCKERHUB}') {
+                withDockerRegistry(credentialsId: 'ecr:ap-northeast-2:ecr_cre', url: ${DOCKERHUB}) {
                     sh "docker push ${DOCKERHUB}:${currentBuild.number}"
                     sh "docker push ${DOCKERHUB}:latest"
                 }
