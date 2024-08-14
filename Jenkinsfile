@@ -6,10 +6,10 @@ pipeline {
         // CODE_REPO = 'git@github.com:pcmin929/fast-code.git'
         // MANIFEST_REPO = 'git@github.com:pcmin929/deployment.git'
 
-        CODE_REPO = 'git-codecommit.ap-northeast-2.amazonaws.com/v1/repos/code'
+        CODE_REPO = 'APKA4TCDWN7EFKAN7EXA@git-codecommit.ap-northeast-2.amazonaws.com/v1/repos/code'
         MANIFEST_REPO = 'git-codecommit.ap-northeast-2.amazonaws.com/v1/repos/mani'
 
-        CONTAINER_REPO = '865577889736.dkr.ecr.ap-northeast-2.amazonaws.com/fast'
+        CONTAINER_REPO = 'APKA4TCDWN7EFKAN7EXA@865577889736.dkr.ecr.ap-northeast-2.amazonaws.com/fast'
         CONTAINER_REGISTRY_CREDENTIAL = 'ecr_cre'
     }
     stages {
@@ -21,7 +21,8 @@ pipeline {
             //        color: '#FFFF00', 
             //        message: "STARTED: ${currentBuild.number}"
             //    )
-
+                sh "git remote remove origin"
+                sh "git remote add origin ${CODE_REPO}"
                   checkout scm
             }
             post {
