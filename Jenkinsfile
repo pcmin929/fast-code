@@ -4,7 +4,7 @@ pipeline {
         GITNAME = 'pcmin929'
         GITEMAIL = 'pcmin929@gmail.com'
         GITWEBADD = 'git@github.com:pcmin929/fast-code.git'
-        GITSSHADD = 'git@github.com:pcmin929/deployment.git'
+        GITDEPADD = 'git@github.com:pcmin929/deployment.git'
         GITCREDENTIAL = 'git_cre'
         DOCKERHUB = '865577889736.dkr.ecr.ap-northeast-2.amazonaws.com/fast'
         DOCKERHUBCREDENTIAL = 'ecr_cre'
@@ -70,29 +70,29 @@ pipeline {
                 }
             }
         }
-        // stage('EKS manifest file update') {
-        //     steps {
-        //         git credentialsId: GITCREDENTIAL, url: GITSSHADD, branch: 'main'
-        //         sh "git config --global user.email ${GITEMAIL}"
-        //         sh "git config --global user.name ${GITNAME}"
-        //         sh "sed -i 's@${DOCKERHUB}:.*@${DOCKERHUB}:${currentBuild.number}@g' fast.yml"
+        stage('EKS manifest file update') {
+            steps {
+                git url: GITDEPADD, branch: 'main'
+                sh "git config --global user.email ${GITEMAIL}"
+                sh "git config --global user.name ${GITNAME}"
+                sh "sed -i 's@${DOCKERHUB}:.*@${DOCKERHUB}:${currentBuild.number}@g' fast.yml"
 
-        //         sh "git add ."
-        //         sh "git branch -M main"
-        //         sh "git commit -m 'fixed tag ${currentBuild.number}'"
-        //         sh "git remote remove origin"
-        //         sh "git remote add origin ${GITSSHADD}"
-        //         sh "git push origin main"
-        //     }
-        //     post {
-        //         failure {
-        //             sh "echo manifest update failed"
-        //         }
-        //         success {
-        //             sh "echo manifest update success"
-        //         }
-        //     }
-        // }
+                sh "git add ."
+                sh "git branch -M main"
+                sh "git commit -m 'fixed tag ${currentBuild.number}'"
+                sh "git remote remove origin"
+                sh "git remote add origin ${GITDEPADD}"
+                sh "git push origin main"
+            }
+            post {
+                failure {
+                    sh "echo manifest update failed"
+                }
+                success {
+                    sh "echo manifest update success"
+                }
+            }
+        }
         
 
     }
