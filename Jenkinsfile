@@ -6,7 +6,7 @@ pipeline {
         GITWEBADD = 'git@github.com:pcmin929/fast-code.git'
         GITSSHADD = 'git@github.com:pcmin929/deployment.git'
         GITCREDENTIAL = 'git_cre'
-        DOCKERHUB = 'https://865577889736.dkr.ecr.ap-northeast-2.amazonaws.com/fast'
+        DOCKERHUB = '865577889736.dkr.ecr.ap-northeast-2.amazonaws.com/fast'
         DOCKERHUBCREDENTIAL = 'ecr_cre'
     }
     stages {
@@ -50,7 +50,7 @@ pipeline {
         }
         stage('docker image push') {
             steps {
-                withDockerRegistry(credentialsId: 'ecr:ap-northeast-2:ecr_cre', url: '${DOCKERHUB}') {
+                withDockerRegistry(credentialsId: 'ecr:ap-northeast-2:ecr_cre', url: 'https://${DOCKERHUB}') {
                     sh "docker push ${DOCKERHUB}:${currentBuild.number}"
                     sh "docker push ${DOCKERHUB}:latest"
                 }
