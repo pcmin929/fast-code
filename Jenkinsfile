@@ -1,13 +1,12 @@
 pipeline {
     agent any
     environment {
-        GITNAME = 'pcmin929'
-        GITEMAIL = 'pcmin929@gmail.com'
-        GITWEBADD = 'git@github.com:pcmin929/fast-code.git'
-        GITDEPADD = 'git@github.com:pcmin929/deployment.git'
-        GITCREDENTIAL = 'git_cre'
-        DOCKERHUB = '865577889736.dkr.ecr.ap-northeast-2.amazonaws.com/fast'
-        DOCKERHUBCREDENTIAL = 'ecr_cre'
+        GIT_NAME = 'pcmin929'
+        GIT_EMAIL = 'pcmin929@gmail.com'
+        CODE_REPO = 'git@github.com:pcmin929/fast-code.git'
+        MANIFEST_REPO = 'git@github.com:pcmin929/deployment.git'
+        CONTAINER_REPO = '865577889736.dkr.ecr.ap-northeast-2.amazonaws.com/fast'
+        CONTAINER_REGISTRY_CREDENTIAL = 'ecr_cre'
     }
     stages {
         stage('Checkout Github') {
@@ -18,8 +17,7 @@ pipeline {
             //        color: '#FFFF00', 
             //        message: "STARTED: ${currentBuild.number}"
             //    )
-            //    checkout([$class: 'GitSCM', branches: [[name: '*/main']], extensions: [],
-            //    userRemoteConfigs: [[credentialsId: GITCREDENTIAL, url: GITWEBADD]]])
+
                   checkout scm
             }
             post {
@@ -33,8 +31,8 @@ pipeline {
         }
         stage('docker image build') {
             steps {
-                sh "docker build -t ${DOCKERHUB}:${currentBuild.number} ."
-                sh "docker build -t ${DOCKERHUB}:latest ."
+                sh "docker build -t ${CONTAINER_REPO}:${currentBuild.number} ."
+                sh "docker build -t ${CONTAINER_REPO}:latest ."
                 // currentBuild.number 젠킨스가 제공하는 빌드넘버 변수
                 // oolralra/fast:<빌드넘버> 와 같은 이미지가 만들어질 예정.
                 
@@ -50,21 +48,21 @@ pipeline {
         }
         stage('docker image push') {
             steps {
-                withDockerRegistry(credentialsId: 'ecr:ap-northeast-2:ecr_cre', url: 'https://${DOCKERHUB}') {
-                    sh "docker push ${DOCKERHUB}:${currentBuild.number}"
-                    sh "docker push ${DOCKERHUB}:latest"
+                withDockerRegistry(credentialsId: 'ecr:ap-northeast-2:ecr_cre', url: 'https://${CONTAINER_REPO}') {
+                    sh "docker push ${CONTAINER_REPO}:${currentBuild.number}"
+                    sh "docker push ${CONTAINER_REPO}:latest"
                 }
             }
             post {
                 failure {
-                    sh "docker image rm -f ${DOCKERHUB}:${currentBuild.number}"
-                    sh "docker image rm -f ${DOCKERHUB}:latest"
+                    sh "docker image rm -f ${CONTAINER_REPO}:${currentBuild.number}"
+                    sh "docker image rm -f ${CONTAINER_REPO}:latest"
                     sh "echo push failed"
                     // 성공하든 실패하든 로컬에 있는 도커이미지는 삭제
                 }
                 success {
-                    sh "docker image rm -f ${DOCKERHUB}:${currentBuild.number}"
-                    sh "docker image rm -f ${DOCKERHUB}:latest"
+                    sh "docker image rm -f ${CONTAINER_REPO}:${currentBuild.number}"
+                    sh "docker image rm -f ${CONTAINER_REPO}:latest"
                     sh "echo push success"
                     // 성공하든 실패하든 로컬에 있는 도커이미지는 삭제
                 }
@@ -72,16 +70,16 @@ pipeline {
         }
         stage('EKS manifest file update') {
             steps {
-                git url: GITDEPADD, branch: 'main'
-                sh "git config --global user.email ${GITEMAIL}"
-                sh "git config --global user.name ${GITNAME}"
-                sh "sed -i 's@${DOCKERHUB}:.*@${DOCKERHUB}:${currentBuild.number}@g' fast.yml"
+                git url: MANIFEST_REPO, branch: 'main'
+                sh "git config --global user.email ${GIT_EMAIL}"
+                sh "git config --global user.name ${GIT_NAME}"
+                sh "sed -i 's@${CONTAINER_REPO}:.*@${CONTAINER_REPO}:${currentBuild.number}@g' fast.yml"
 
                 sh "git add ."
                 sh "git branch -M main"
                 sh "git commit -m 'fixed tag ${currentBuild.number}'"
                 sh "git remote remove origin"
-                sh "git remote add origin ${GITDEPADD}"
+                sh "git remote add origin ${MANIFEST_REPO}"
                 sh "git push origin main"
             }
             post {
