@@ -6,7 +6,7 @@ pipeline {
         GITWEBADD = 'git@github.com:pcmin929/fast-code.git'
         GITSSHADD = 'git@github.com:pcmin929/deployment.git'
         GITCREDENTIAL = 'git_cre'
-        DOCKERHUB = '865577889736.dkr.ecr.ap-northeast-2.amazonaws.com/fast'
+        DOCKERHUB = 'https://865577889736.dkr.ecr.ap-northeast-2.amazonaws.com/fast'
         DOCKERHUBCREDENTIAL = 'ecr_cre'
     }
     stages {
